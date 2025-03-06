@@ -1,0 +1,15 @@
+{% extends "base_list.html" %}
+
+{% block list_content %}
+<div class="list-group">
+    {% for specialty in items.items %}
+    <a href="{{ url_for('specialty_detail_by_name', specialty_name=specialty.name) }}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ specialty.name }}</h5>
+            <small>{{ specialty.conditions.count() }} conditions, {{ specialty.medications.count() }} medications</small>
+        </div>
+        <p class="mb-1">{{ specialty.description }}</p>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

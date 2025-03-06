@@ -1,0 +1,277 @@
+{
+    "conditions": [
+        {
+            "id": 1,
+            "name": "Hypertension",
+            "description": "High blood pressure is a common condition in which the long-term force of the blood against your artery walls is high enough that it may eventually cause health problems, such as heart disease.",
+            "symptoms": [
+                "Headaches",
+                "Shortness of breath",
+                "Nosebleeds"
+            ],
+            "treatments": [
+                "Lifestyle changes",
+                "Medication",
+                "Regular monitoring"
+            ],
+            "references": [
+                "JNC 8 Guidelines",
+                "American Heart Association, 2023"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Type 2 Diabetes",
+            "description": "Type 2 diabetes is a chronic condition that affects the way your body metabolizes sugar (glucose) \u2014 an important source of fuel for your body.",
+            "symptoms": [
+                "Increased thirst",
+                "Frequent urination",
+                "Increased hunger",
+                "Fatigue",
+                "Blurred vision"
+            ],
+            "treatments": [
+                "Lifestyle changes",
+                "Medication",
+                "Blood sugar monitoring",
+                "Insulin therapy"
+            ],
+            "references": [
+                "American Diabetes Association, 2023",
+                "Diabetes Care, 2022"
+            ]
+        },
+        {
+            "id": 3,
+            "name": "Asthma",
+            "description": "Asthma is a condition in which your airways narrow and swell and may produce extra mucus, making breathing difficult and triggering coughing, a whistling sound (wheezing) when you breathe out and shortness of breath.",
+            "symptoms": [
+                "Shortness of breath",
+                "Chest tightness or pain",
+                "Wheezing",
+                "Trouble sleeping due to breathing difficulty"
+            ],
+            "treatments": [
+                "Inhalers",
+                "Long-term asthma control medications",
+                "Avoiding triggers"
+            ],
+            "references": [
+                "Global Initiative for Asthma (GINA), 2023",
+                "National Asthma Education and Prevention Program"
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Coronary Artery Disease",
+            "description": "Coronary artery disease is a condition in which the major blood vessels that supply your heart become damaged or diseased, often due to cholesterol-containing deposits (plaques) or inflammation.",
+            "symptoms": [
+                "Chest pain (angina)",
+                "Shortness of breath",
+                "Pain in the neck, jaw, throat, upper abdomen or back",
+                "Nausea",
+                "Fatigue"
+            ],
+            "treatments": [
+                "Lifestyle changes",
+                "Medications",
+                "Procedures to restore blood flow",
+                "Cardiac rehabilitation"
+            ],
+            "references": [
+                "American Heart Association, 2023",
+                "American College of Cardiology, 2022"
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Chronic Obstructive Pulmonary Disease (COPD)",
+            "description": "Chronic obstructive pulmonary disease (COPD) is a chronic inflammatory lung disease that causes obstructed airflow from the lungs, making it increasingly difficult to breathe.",
+            "symptoms": [
+                "Shortness of breath",
+                "Chronic cough",
+                "Wheezing",
+                "Chest tightness",
+                "Frequent respiratory infections"
+            ],
+            "treatments": [
+                "Smoking cessation",
+                "Bronchodilators",
+                "Inhaled steroids",
+                "Pulmonary rehabilitation",
+                "Oxygen therapy"
+            ],
+            "references": [
+                "Global Initiative for Chronic Obstructive Lung Disease (GOLD), 2023",
+                "American Thoracic Society, 2022"
+            ]
+        }
+    ],
+    "medications": [
+        {
+            "id": 1,
+            "name": "Lisinopril",
+            "class": "ACE inhibitor",
+            "uses": [
+                "Hypertension",
+                "Heart failure",
+                "Post-myocardial infarction"
+            ],
+            "side_effects": [
+                "Dry cough",
+                "Dizziness",
+                "Headache",
+                "Elevated potassium levels"
+            ],
+            "dosing": "10-40 mg once daily",
+            "contraindications": [
+                "Pregnancy",
+                "History of angioedema",
+                "Bilateral renal artery stenosis"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Metformin",
+            "class": "Biguanide",
+            "uses": [
+                "Type 2 diabetes",
+                "Prediabetes",
+                "Polycystic ovary syndrome"
+            ],
+            "side_effects": [
+                "Gastrointestinal upset",
+                "Vitamin B12 deficiency",
+                "Lactic acidosis (rare)"
+            ],
+            "dosing": "500-2000 mg daily in divided doses",
+            "contraindications": [
+                "Renal impairment",
+                "Acute or chronic metabolic acidosis"
+            ]
+        },
+        {
+            "id": 3,
+            "name": "Albuterol",
+            "class": "Short-acting beta-agonist",
+            "uses": [
+                "Asthma",
+                "COPD",
+                "Exercise-induced bronchospasm"
+            ],
+            "side_effects": [
+                "Tremor",
+                "Tachycardia",
+                "Nervousness",
+                "Headache"
+            ],
+            "dosing": "2 puffs every 4-6 hours as needed",
+            "contraindications": [
+                "Hypersensitivity to albuterol"
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Atorvastatin",
+            "class": "HMG-CoA reductase inhibitor (statin)",
+            "uses": [
+                "Hyperlipidemia",
+                "Prevention of cardiovascular disease",
+                "Coronary artery disease"
+            ],
+            "side_effects": [
+                "Muscle pain",
+                "Liver enzyme elevation",
+                "Headache",
+                "Digestive problems"
+            ],
+            "dosing": "10-80 mg once daily",
+            "contraindications": [
+                "Active liver disease",
+                "Pregnancy",
+                "Breastfeeding"
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Levothyroxine",
+            "class": "Thyroid hormone replacement",
+            "uses": [
+                "Hypothyroidism",
+                "Thyroid cancer (after thyroidectomy)",
+                "Myxedema coma"
+            ],
+            "side_effects": [
+                "Palpitations",
+                "Nervousness",
+                "Insomnia",
+                "Weight loss"
+            ],
+            "dosing": "Typically 1.6 mcg/kg/day, adjusted based on TSH levels",
+            "contraindications": [
+                "Thyrotoxicosis",
+                "Acute myocardial infarction (untreated)"
+            ]
+        }
+    ],
+    "specialties": [
+        {
+            "id": 1,
+            "name": "Cardiology",
+            "description": "Cardiology is the medical specialty that deals with disorders of the heart and cardiovascular system. Cardiologists diagnose and treat conditions such as coronary artery disease, heart failure, and arrhythmias.",
+            "topics": [
+                "Hypertension",
+                "Coronary Artery Disease",
+                "Heart Failure",
+                "Arrhythmias"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Endocrinology",
+            "description": "Endocrinology is the medical specialty that deals with the endocrine system, its diseases, and its specific secretions called hormones. Endocrinologists diagnose and treat conditions such as diabetes, thyroid disorders, and hormonal imbalances.",
+            "topics": [
+                "Diabetes",
+                "Thyroid Disorders",
+                "Adrenal Disorders",
+                "Pituitary Disorders"
+            ]
+        },
+        {
+            "id": 3,
+            "name": "Pulmonology",
+            "description": "Pulmonology is the medical specialty that deals with diseases involving the respiratory tract. Pulmonologists diagnose and treat conditions such as asthma, COPD, pneumonia, and other respiratory disorders.",
+            "topics": [
+                "Asthma",
+                "COPD",
+                "Pneumonia",
+                "Lung Cancer",
+                "Sleep Apnea"
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Gastroenterology",
+            "description": "Gastroenterology is the branch of medicine focused on the digestive system and its disorders. Gastroenterologists diagnose and treat conditions affecting the esophagus, stomach, small intestine, colon, liver, pancreas, and gallbladder.",
+            "topics": [
+                "Gastroesophageal Reflux Disease (GERD)",
+                "Inflammatory Bowel Disease",
+                "Irritable Bowel Syndrome",
+                "Hepatitis",
+                "Pancreatitis"
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Neurology",
+            "description": "Neurology is the branch of medicine dealing with disorders of the nervous system. Neurologists diagnose and treat conditions affecting the brain, spinal cord, and peripheral nerves.",
+            "topics": [
+                "Stroke",
+                "Epilepsy",
+                "Multiple Sclerosis",
+                "Parkinson's Disease",
+                "Alzheimer's Disease"
+            ]
+        }
+    ]
+}

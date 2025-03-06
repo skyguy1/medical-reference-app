@@ -1,0 +1,223 @@
+C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\flask_sqlalchemy\model.py:30: SAWarning: relationship 'ConditionHistory.condition' will copy column condition.id to column condition_history.condition_id, which conflicts with relationship(s): 'Condition.history' (copies condition.id to condition_history.condition_id), 'ConditionHistory.current_condition' (copies condition.id to condition_history.condition_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="current_condition,history"' to the 'ConditionHistory.condition' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  return cls.query_class(
+C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\flask_sqlalchemy\model.py:30: SAWarning: relationship 'MedicationHistory.medication' will copy column medication.id to column medication_history.medication_id, which conflicts with relationship(s): 'Medication.history' (copies medication.id to medication_history.medication_id), 'MedicationHistory.current_medication' (copies medication.id to medication_history.medication_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="current_medication,history"' to the 'MedicationHistory.medication' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  return cls.query_class(
+C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\flask_sqlalchemy\model.py:30: SAWarning: relationship 'GuidelineHistory.guideline' will copy column guideline.id to column guideline_history.guideline_id, which conflicts with relationship(s): 'Guideline.history' (copies guideline.id to guideline_history.guideline_id), 'GuidelineHistory.current_guideline' (copies guideline.id to guideline_history.guideline_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="current_guideline,history"' to the 'GuidelineHistory.guideline' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  return cls.query_class(
+C:\Users\Sky Greenwald\CascadeProjects\medical-reference-app\models.py:130: SAWarning: Usage of the 'Session.add()' operation is not currently supported within the execution stage of the flush process. Results may not be consistent.  Consider using alternative event listeners or connection-level operations instead. (This warning originated from the Session 'autoflush' process, which was invoked automatically in response to a user-initiated operation. Consider using ``no_autoflush`` context manager if this warning happended while initializing objects.)
+  db.session.add(history)
+Traceback (most recent call last):
+  File "C:\Users\Sky Greenwald\CascadeProjects\medical-reference-app\app.py", line 594, in <module>
+    seed_database()
+    ~~~~~~~~~~~~~^^
+  File "C:\Users\Sky Greenwald\CascadeProjects\medical-reference-app\app.py", line 237, in seed_database
+    condition = Condition.query.filter_by(name=condition_data['name']).first()
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\query.py", line 2754, in first
+    return self.limit(1)._iter().first()  # type: ignore
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\query.py", line 2853, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\session.py", line 2365, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\session.py", line 2230, in _execute_internal
+    ) = compile_state_cls.orm_pre_session_exec(
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        False,
+        ^^^^^^
+    )
+    ^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\context.py", line 561, in orm_pre_session_exec
+    session._autoflush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\session.py", line 3054, in _autoflush
+    self.flush()
+    ~~~~~~~~~~^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\session.py", line 4353, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\session.py", line 4488, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\session.py", line 4449, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\persistence.py", line 101, in save_obj
+    _finalize_insert_update_commands(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<16 lines>...
+        ),
+        ^^
+    )
+    ^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\persistence.py", line 1564, in _finalize_insert_update_commands
+    mapper.dispatch.after_insert(mapper, connection, state)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\event\attr.py", line 497, in __call__
+    fn(*args, **kw)
+    ~~^^^^^^^^^^^^^
+  File "C:\Users\Sky Greenwald\AppData\Roaming\Python\Python313\site-packages\sqlalchemy\orm\events.py", line 893, in wrap
+    fn(*arg, **kw)
+    ~~^^^^^^^^^^^^
+  File "C:\Users\Sky Greenwald\CascadeProjects\medical-reference-app\models.py", line 243, in medication_after_insert
+    create_medication_history(medication, change_type='create')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Sky Greenwald\CascadeProjects\medical-reference-app\models.py", line 219, in create_medication_history
+    description=medication.description,
+                ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Medication' object has no attribute 'description'
+2025-03-06 11:58:00.564874: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'create_or_get_specialty'
+2025-03-06 11:58:26.106974: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 11:58:27.072708: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:01:53.581390: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:03:12.167645: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:03:54.818556: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:07:09.468858: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:07:52.395702: Error seeding database: cannot import name 'RespiratoryDataImporter' from 'data_importer_respiratory' (C:\Users\Sky Greenwald\CascadeProjects\medical-reference-app\data_importer_respiratory.py)
+2025-03-06 12:09:23.666883: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:11:37.611052: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:12:17.179662: Error seeding database: 'DermatologyDataImporter' object has no attribute 'create_or_get_specialty'
+2025-03-06 12:13:38.582809: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:14:07.098211: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:47:09.364876: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:47:28.642156: Error seeding database: BaseDataImporter.add_guideline() got an unexpected keyword argument 'content'
+2025-03-06 12:48:17.607324: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 12:51:29.590404: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 12:52:54.870732: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 12:53:23.457452: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 12:54:17.157520: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 12:59:51.626978: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:00:05.180218: Error importing Psychiatry data: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:00:05.238724: Error importing Rheumatology data: 'RheumatologyDataImporter' object has no attribute 'import_data'
+2025-03-06 13:00:05.300130: Error importing Dermatology data: 'DermatologyDataImporter' object has no attribute 'import_data'
+2025-03-06 13:00:05.300476: Error importing Endocrinology data: 'EndocrinologyDataImporter' object has no attribute 'import_data'
+2025-03-06 13:00:48.669470: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:01:01.721883: Error importing Psychiatry data: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:01:01.830901: Error importing Dermatology data: 'DermatologyDataImporter' object has no attribute 'import_data'
+2025-03-06 13:01:01.831255: Error importing Endocrinology data: 'EndocrinologyDataImporter' object has no attribute 'import_data'
+2025-03-06 13:02:09.668605: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:02:23.388849: Error importing Psychiatry data: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:02:23.549465: Error importing Endocrinology data: 'EndocrinologyDataImporter' object has no attribute 'import_data'
+2025-03-06 13:03:10.005659: Error seeding database: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:03:22.830284: Error importing Psychiatry data: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:03:51.973903: Error importing Psychiatry data: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:08:05.972090: Error importing Psychiatry data: 'PsychiatryDataImporter' object has no attribute 'import_data'
+2025-03-06 13:12:34.664827: Error seeding database: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Lisinopril', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.775643: Error importing Cardiology data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Lisinopril', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.785813: Error importing Psychiatry data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Fluoxetine (Prozac)', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.795444: Error importing Infectious Diseases data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Ceftriaxone', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.805220: Error importing Rheumatology data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Methotrexate', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.816649: Error importing Neurology data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Sumatriptan', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.826052: Error importing Respiratory data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Albuterol', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.836700: Error importing Gastroenterology data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Omeprazole', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.847332: Error importing Dermatology data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Adalimumab', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.853014: Error importing Endocrinology data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Insulin Glargine', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.861859: Error importing Nephrology data: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication 
+WHERE medication.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Furosemide (Lasix)', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-06 13:12:50.864491: Error seeding database: (sqlite3.OperationalError) no such column: medication.description
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT medication.id AS medication_id, medication.name AS medication_name, medication.class_name AS medication_class_name, medication.description AS medication_description, medication.uses AS medication_uses, medication.side_effects AS medication_side_effects, medication.dosing AS medication_dosing, medication.contraindications AS medication_contraindications, medication.created_at AS medication_created_at, medication.updated_at AS medication_updated_at, medication.version AS medication_version, medication.specialty_id AS medication_specialty_id 
+FROM medication) AS anon_1]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

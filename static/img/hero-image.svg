@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="500px" viewBox="0 0 800 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Medical Reference Hero</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#3498DB" offset="0%"></stop>
+            <stop stop-color="#2C3E50" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Background" fill="url(#linearGradient-1)" x="0" y="0" width="800" height="500" rx="20"></rect>
+        <g id="Medical-Icons" transform="translate(100, 100)">
+            <circle id="Circle1" fill="#FFFFFF" opacity="0.8" cx="300" cy="150" r="150"></circle>
+            <path d="M300,50 L300,250" id="VerticalLine" stroke="#2C3E50" stroke-width="25" stroke-linecap="round"></path>
+            <path d="M200,150 L400,150" id="HorizontalLine" stroke="#2C3E50" stroke-width="25" stroke-linecap="round"></path>
+            <circle id="Circle2" fill="#E74C3C" opacity="0.6" cx="150" cy="100" r="50"></circle>
+            <circle id="Circle3" fill="#27AE60" opacity="0.6" cx="450" cy="200" r="50"></circle>
+            <circle id="Circle4" fill="#F39C12" opacity="0.6" cx="400" cy="50" r="30"></circle>
+            <circle id="Circle5" fill="#9B59B6" opacity="0.6" cx="200" cy="250" r="30"></circle>
+        </g>
+        <text id="Medical-Reference" font-family="Arial-BoldMT, Arial" font-size="24" font-weight="bold" fill="#FFFFFF">
+            <tspan x="280" y="400">MEDICAL REFERENCE</tspan>
+        </text>
+        <text id="Evidence-Based-Information" font-family="ArialMT, Arial" font-size="18" font-weight="normal" fill="#FFFFFF">
+            <tspan x="265" y="430">Evidence-Based Information</tspan>
+        </text>
+    </g>
+</svg>

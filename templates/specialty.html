@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ specialty.name }} - MedRef{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/browse">Specialties</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ specialty.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h1 class="card-title">{{ specialty.name }}</h1>
+                <p class="lead">
+                    {{ specialty.description if specialty.description else specialty.name + " is a medical specialty focusing on diagnosis and treatment of conditions related to " + specialty.name + "." }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <h2>Key Topics in {{ specialty.name }}</h2>
+    </div>
+    
+    {% if topics and topics|length > 0 %}
+        {% for topic in topics %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title h4">{{ topic }}</h3>
+                    <p class="card-text">
+                        Information about {{ topic }}.
+                        {% for condition in conditions %}
+                            {% if condition.name == topic %}
+                                <a href="/condition/{{ condition.id }}" class="btn btn-sm btn-primary mt-2">View Details</a>
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>No topics available for this specialty yet.
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title h5 mb-0">Clinical Guidelines for {{ specialty.name }}</h3>
+            </div>
+            <div class="card-body">
+                <p>Access the latest clinical guidelines and practice recommendations for {{ specialty.name }}.</p>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ specialty.name }} Guidelines</h5>
+                            <small>2023</small>
+                        </div>
+                        <p class="mb-1">Guidelines for the diagnosis and management of {{ specialty.name }} conditions</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

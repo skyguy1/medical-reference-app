@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile - Medical Reference App{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img src="https://via.placeholder.com/150" class="rounded-circle" alt="Profile Picture">
+                    </div>
+                    <h4 class="text-center">{{ user.username }}</h4>
+                    <p class="text-center text-muted">{{ user.email }}</p>
+                    <hr>
+                    <div class="mb-3">
+                        <strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Role:</strong> {{ user.role }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Member since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Last login:</strong> {{ user.last_login.strftime('%B %d, %Y %H:%M') if user.last_login else 'Never' }}
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-outline-primary">Edit Profile</a>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Favorites</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="favoriteTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="conditions-tab" data-bs-toggle="tab" data-bs-target="#conditions" type="button" role="tab" aria-controls="conditions" aria-selected="true">Conditions</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="medications-tab" data-bs-toggle="tab" data-bs-target="#medications" type="button" role="tab" aria-controls="medications" aria-selected="false">Medications</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="references-tab" data-bs-toggle="tab" data-bs-target="#references" type="button" role="tab" aria-controls="references" aria-selected="false">References</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content p-3" id="favoriteTabsContent">
+                        <div class="tab-pane fade show active" id="conditions" role="tabpanel" aria-labelledby="conditions-tab">
+                            {% set condition_favorites = user.favorites|selectattr('item_type', 'equalto', 'condition')|list %}
+                            {% if condition_favorites %}
+                                <div class="list-group">
+                                    {% for favorite in condition_favorites %}
+                                        <a href="{{ url_for('view_condition', id=favorite.item_id) }}" class="list-group-item list-group-item-action">
+                                            <!-- Placeholder for condition name -->
+                                            Condition #{{ favorite.item_id }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No favorite conditions yet.</p>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane fade" id="medications" role="tabpanel" aria-labelledby="medications-tab">
+                            {% set medication_favorites = user.favorites|selectattr('item_type', 'equalto', 'medication')|list %}
+                            {% if medication_favorites %}
+                                <div class="list-group">
+                                    {% for favorite in medication_favorites %}
+                                        <a href="{{ url_for('view_medication', id=favorite.item_id) }}" class="list-group-item list-group-item-action">
+                                            <!-- Placeholder for medication name -->
+                                            Medication #{{ favorite.item_id }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No favorite medications yet.</p>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane fade" id="references" role="tabpanel" aria-labelledby="references-tab">
+                            {% set reference_favorites = user.favorites|selectattr('item_type', 'equalto', 'reference')|list %}
+                            {% if reference_favorites %}
+                                <div class="list-group">
+                                    {% for favorite in reference_favorites %}
+                                        <a href="{{ url_for('view_reference', id=favorite.item_id) }}" class="list-group-item list-group-item-action">
+                                            <!-- Placeholder for reference title -->
+                                            Reference #{{ favorite.item_id }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No favorite references yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Recent Activity</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">No recent activity to display.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

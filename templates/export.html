@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Export Data - Medical Reference App{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Export Medical Data</h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <p class="lead">Export medical reference data in various formats for use in other applications.</p>
+                    
+                    <form action="{{ url_for('export_download') }}" method="get" class="mt-4">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="data-type" class="form-label">Data Type</label>
+                                    <select class="form-select" id="data-type" name="type">
+                                        <option value="all">All Data</option>
+                                        <option value="conditions">Conditions</option>
+                                        <option value="medications">Medications</option>
+                                        <option value="specialties">Specialties</option>
+                                        <option value="references">References</option>
+                                        <option value="guidelines">Guidelines</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="format" class="form-label">Export Format</label>
+                                    <select class="form-select" id="format" name="format">
+                                        <option value="json">JSON</option>
+                                        <option value="csv">CSV</option>
+                                        <option value="excel">Excel</option>
+                                        <option value="xml">XML</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-download me-2"></i> Download Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Export Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Available Data Types</h4>
+                            <ul class="list-group mb-4">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    All Data
+                                    <span class="badge bg-primary rounded-pill">Complete dataset</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Conditions
+                                    <span class="badge bg-primary rounded-pill">{{ condition_count }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Medications
+                                    <span class="badge bg-primary rounded-pill">{{ medication_count }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Specialties
+                                    <span class="badge bg-primary rounded-pill">{{ specialty_count }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    References
+                                    <span class="badge bg-primary rounded-pill">{{ reference_count }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Guidelines
+                                    <span class="badge bg-primary rounded-pill">{{ guideline_count }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Export Format Details</h4>
+                            <div class="accordion" id="formatAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="jsonHeading">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#jsonCollapse" aria-expanded="true" aria-controls="jsonCollapse">
+                                            JSON Format
+                                        </button>
+                                    </h2>
+                                    <div id="jsonCollapse" class="accordion-collapse collapse show" aria-labelledby="jsonHeading" data-bs-parent="#formatAccordion">
+                                        <div class="accordion-body">
+                                            <p>JSON (JavaScript Object Notation) is a lightweight data-interchange format that is easy to read and write for humans and easy to parse and generate for machines.</p>
+                                            <p>Best for: API integration, web applications, and preserving data structure.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="csvHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#csvCollapse" aria-expanded="false" aria-controls="csvCollapse">
+                                            CSV Format
+                                        </button>
+                                    </h2>
+                                    <div id="csvCollapse" class="accordion-collapse collapse" aria-labelledby="csvHeading" data-bs-parent="#formatAccordion">
+                                        <div class="accordion-body">
+                                            <p>CSV (Comma-Separated Values) is a simple file format used to store tabular data, such as a spreadsheet or database.</p>
+                                            <p>Best for: Spreadsheet applications, data analysis, and simple data structures.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="excelHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#excelCollapse" aria-expanded="false" aria-controls="excelCollapse">
+                                            Excel Format
+                                        </button>
+                                    </h2>
+                                    <div id="excelCollapse" class="accordion-collapse collapse" aria-labelledby="excelHeading" data-bs-parent="#formatAccordion">
+                                        <div class="accordion-body">
+                                            <p>Excel format (.xlsx) allows for rich formatting, multiple sheets, and is directly compatible with Microsoft Excel and other spreadsheet applications.</p>
+                                            <p>Best for: Data analysis, reporting, and visualization in Excel.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="xmlHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#xmlCollapse" aria-expanded="false" aria-controls="xmlCollapse">
+                                            XML Format
+                                        </button>
+                                    </h2>
+                                    <div id="xmlCollapse" class="accordion-collapse collapse" aria-labelledby="xmlHeading" data-bs-parent="#formatAccordion">
+                                        <div class="accordion-body">
+                                            <p>XML (eXtensible Markup Language) is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable.</p>
+                                            <p>Best for: Document-oriented applications, legacy systems, and applications requiring strict data validation.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

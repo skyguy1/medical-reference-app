@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results - MedRef{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">
+        {% if query %}
+        Search Results for "{{ query }}"
+        {% else %}
+        Search Medical Reference
+        {% endif %}
+    </h1>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form action="/search" method="get">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <input type="text" name="q" class="form-control form-control-lg" placeholder="Search conditions, medications, specialties..." value="{{ query }}">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">Search</button>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <label for="category" class="form-label">Category</label>
+                                <select name="category" id="category" class="form-select">
+                                    <option value="all" {% if selected_category == 'all' %}selected{% endif %}>All Categories</option>
+                                    <option value="conditions" {% if selected_category == 'conditions' %}selected{% endif %}>Conditions</option>
+                                    <option value="medications" {% if selected_category == 'medications' %}selected{% endif %}>Medications</option>
+                                    <option value="specialties" {% if selected_category == 'specialties' %}selected{% endif %}>Specialties</option>
+                                    <option value="references" {% if selected_category == 'references' %}selected{% endif %}>References</option>
+                                    <option value="guidelines" {% if selected_category == 'guidelines' %}selected{% endif %}>Guidelines</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label for="specialty" class="form-label">Specialty</label>
+                                <select name="specialty" id="specialty" class="form-select">
+                                    <option value="all" {% if selected_specialty == 'all' %}selected{% endif %}>All Specialties</option>
+                                    {% for specialty in specialties %}
+                                    <option value="{{ specialty.name }}" {% if selected_specialty == specialty.name %}selected{% endif %}>{{ specialty.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label for="class" class="form-label">Medication Class</label>
+                                <select name="class" id="class" class="form-select">
+                                    <option value="all" {% if selected_class == 'all' %}selected{% endif %}>All Classes</option>
+                                    {% for class_name in medication_classes %}
+                                    <option value="{{ class_name[0] }}" {% if selected_class == class_name[0] %}selected{% endif %}>{{ class_name[0] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if results %}
+        {% if results.conditions %}
+        <div class="mb-5">
+            <h2 class="h3 mb-3"><i class="bi bi-clipboard2-pulse me-2"></i>Conditions</h2>
+            <div class="row">
+                {% for condition in results.conditions %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h5">{{ condition.name }}</h3>
+                            <span class="badge bg-info mb-2">{{ condition.specialty.name }}</span>
+                            <p class="card-text small">{{ condition.description[:100] }}...</p>
+                            <a href="/condition/{{ condition.id }}" class="btn btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.medications %}
+        <div class="mb-5">
+            <h2 class="h3 mb-3"><i class="bi bi-capsule me-2"></i>Medications</h2>
+            <div class="row">
+                {% for medication in results.medications %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h5">{{ medication.name }}</h3>
+                            <span class="badge bg-primary mb-2">{{ medication.class_name }}</span>
+                            {% if medication.description %}
+                            <p class="card-text small">{{ medication.description[:100] }}...</p>
+                            {% endif %}
+                            <a href="/medication/{{ medication.name }}" class="btn btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.specialties %}
+        <div class="mb-5">
+            <h2 class="h3 mb-3"><i class="bi bi-diagram-3 me-2"></i>Specialties</h2>
+            <div class="row">
+                {% for specialty in results.specialties %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h5">{{ specialty.name }}</h3>
+                            <p class="card-text small">{{ specialty.description[:100] if specialty.description else '' }}</p>
+                            <a href="/specialty/{{ specialty.id }}" class="btn btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.references %}
+        <div class="mb-5">
+            <h2 class="h3 mb-3"><i class="bi bi-journal-text me-2"></i>References</h2>
+            <div class="row">
+                {% for reference in results.references %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h5">{{ reference.title }}</h3>
+                            <p class="card-text small">{{ reference.authors if reference.authors else 'Unknown authors' }}</p>
+                            <a href="/reference/{{ reference.id }}" class="btn btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.guidelines %}
+        <div class="mb-5">
+            <h2 class="h3 mb-3"><i class="bi bi-file-earmark-text me-2"></i>Guidelines</h2>
+            <div class="row">
+                {% for guideline in results.guidelines %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h5">{{ guideline.title }}</h3>
+                            <p class="card-text small">{{ guideline.organization }} ({{ guideline.publication_year }})</p>
+                            <a href="/guideline/{{ guideline.id }}" class="btn btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not results.conditions and not results.medications and not results.specialties and not results.references and not results.guidelines %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>No results found for "{{ query }}". Please try a different search term or adjust your filters.
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

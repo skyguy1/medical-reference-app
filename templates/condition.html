@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ condition.name }} - MedRef{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/browse">Conditions</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ condition.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h1 class="card-title">{{ condition.name }}</h1>
+                <p class="lead">{{ condition.description }}</p>
+                
+                <hr>
+                
+                <h3>Symptoms</h3>
+                <ul class="list-group list-group-flush mb-4">
+                    {% if symptoms %}
+                        {% for symptom in symptoms %}
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-primary me-2"></i>{{ symptom }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No symptoms information available</li>
+                    {% endif %}
+                </ul>
+                
+                <h3>Treatment Options</h3>
+                <ul class="list-group list-group-flush mb-4">
+                    {% if treatments %}
+                        {% for treatment in treatments %}
+                        <li class="list-group-item"><i class="bi bi-capsule text-success me-2"></i>{{ treatment }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No treatment information available</li>
+                    {% endif %}
+                </ul>
+                
+                <h3>References</h3>
+                <ul class="list-group list-group-flush">
+                    {% if references %}
+                        {% for reference in references %}
+                        <li class="list-group-item">
+                            <i class="bi bi-journal-text text-secondary me-2"></i>
+                            {% if reference.url %}
+                                <a href="{{ reference.url }}" target="_blank">{{ reference.title }}</a>
+                            {% else %}
+                                {% set search_url = "https://scholar.google.com/scholar?q=" + reference.title|urlencode %}
+                                <a href="{{ search_url }}" target="_blank">{{ reference.title }}</a>
+                            {% endif %}
+                            {% if reference.authors %}
+                            <div class="small text-muted mt-1">{{ reference.authors }}</div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No references available</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title h5 mb-0">Related Medications</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% if medications %}
+                        {% for medication in medications %}
+                        <li class="list-group-item">
+                            <a href="/medication/{{ medication.id }}" class="text-decoration-none">{{ medication.name }}</a>
+                            <span class="badge bg-secondary float-end">{{ medication.class_name }}</span>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No related medications found</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h3 class="card-title h5 mb-0">Clinical Guidelines</h3>
+            </div>
+            <div class="card-body">
+                <p>Access the latest clinical guidelines for {{ condition.name }} management.</p>
+                <a href="#" class="btn btn-outline-info btn-sm">View Guidelines</a>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h3 class="card-title h5 mb-0">Patient Resources</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="bi bi-file-earmark-pdf me-2"></i><a href="#" class="text-decoration-none">Patient Education Handout</a></li>
+                    <li class="mb-2"><i class="bi bi-card-checklist me-2"></i><a href="#" class="text-decoration-none">Self-Management Tools</a></li>
+                    <li><i class="bi bi-people me-2"></i><a href="#" class="text-decoration-none">Support Groups</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

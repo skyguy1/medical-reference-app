@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ medication.name }} - MedRef{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/browse">Medications</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ medication.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h1 class="card-title">{{ medication.name }}</h1>
+                <span class="badge bg-primary mb-3">{{ medication.class_name }}</span>
+                
+                {% if medication.description %}
+                <p class="lead mt-3">{{ medication.description }}</p>
+                {% endif %}
+                
+                <hr>
+                
+                <h3>Uses</h3>
+                <ul class="list-group list-group-flush mb-4">
+                    {% if uses %}
+                        {% for use in uses %}
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-primary me-2"></i>{{ use }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No uses information available</li>
+                    {% endif %}
+                </ul>
+                
+                <h3>Dosing</h3>
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle-fill me-2"></i>{{ medication.dosing if medication.dosing else "Dosing information not available" }}
+                </div>
+                
+                <h3>Side Effects</h3>
+                <ul class="list-group list-group-flush mb-4">
+                    {% if side_effects %}
+                        {% for side_effect in side_effects %}
+                        <li class="list-group-item"><i class="bi bi-exclamation-triangle text-warning me-2"></i>{{ side_effect }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No side effects information available</li>
+                    {% endif %}
+                </ul>
+                
+                <h3>Contraindications</h3>
+                <ul class="list-group list-group-flush">
+                    {% if contraindications %}
+                        {% for contraindication in contraindications %}
+                        <li class="list-group-item"><i class="bi bi-x-circle-fill text-danger me-2"></i>{{ contraindication }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No contraindications information available</li>
+                    {% endif %}
+                </ul>
+                
+                <h3>References</h3>
+                <ul class="list-group list-group-flush">
+                    {% if references %}
+                        {% for reference in references %}
+                        <li class="list-group-item">
+                            <i class="bi bi-journal-text text-secondary me-2"></i>
+                            {% if reference.url %}
+                                <a href="{{ reference.url }}" target="_blank">{{ reference.title }}</a>
+                            {% else %}
+                                {% set search_url = "https://scholar.google.com/scholar?q=" + reference.title|urlencode %}
+                                <a href="{{ search_url }}" target="_blank">{{ reference.title }}</a>
+                            {% endif %}
+                            {% if reference.authors %}
+                            <div class="small text-muted mt-1">{{ reference.authors }}</div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No references available</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title h5 mb-0">Related Conditions</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% if conditions %}
+                        {% for condition in conditions %}
+                        <li class="list-group-item">
+                            <a href="/condition/{{ condition.id }}" class="text-decoration-none">{{ condition.name }}</a>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No related conditions found</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h3 class="card-title h5 mb-0">Related Medications</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% if related_medications %}
+                        {% for relation in related_medications %}
+                        <li class="list-group-item">
+                            <a href="/medication/{{ relation.related_medication.name }}" class="text-decoration-none">
+                                {{ relation.related_medication.name }}
+                            </a>
+                            <span class="badge {% if relation.relationship_type == 'same_class' %}bg-primary{% else %}bg-info{% endif %} ms-2">
+                                {{ relation.relationship_type|replace('_', ' ')|title }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No related medications found</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h3 class="card-title h5 mb-0">Prescribing Information</h3>
+            </div>
+            <div class="card-body">
+                <p>Access the full prescribing information and drug monograph.</p>
+                <a href="#" class="btn btn-outline-info btn-sm">View Full Monograph</a>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h3 class="card-title h5 mb-0">Patient Resources</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="bi bi-file-earmark-pdf me-2"></i><a href="#" class="text-decoration-none">Medication Guide</a></li>
+                    <li class="mb-2"><i class="bi bi-card-checklist me-2"></i><a href="#" class="text-decoration-none">Administration Instructions</a></li>
+                    <li><i class="bi bi-currency-dollar me-2"></i><a href="#" class="text-decoration-none">Assistance Programs</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

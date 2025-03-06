@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}MedRef - Evidence-Based Medical Reference{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-5">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">Evidence-Based Medical Reference</h1>
+        <p class="lead mb-4">Access comprehensive, up-to-date clinical information to support your medical decisions.</p>
+        <div class="d-grid gap-2 d-md-flex">
+            <a href="/browse" class="btn btn-primary btn-lg px-4 me-md-2">Browse Topics</a>
+            <a href="/about" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+        </div>
+    </div>
+    <div class="col-lg-6 mt-4 mt-lg-0">
+        <img src="{{ url_for('static', filename='img/hero-image.svg') }}" alt="Medical professionals" class="img-fluid rounded shadow">
+    </div>
+</div>
+
+<hr class="my-5">
+
+<div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+        <h2>Quick Access</h2>
+        <p class="text-muted">Find the information you need by specialty or condition</p>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-heart-pulse text-danger" style="font-size: 2.5rem;"></i>
+                <h3 class="card-title mt-3">Cardiology</h3>
+                <p class="card-text">Access information on hypertension, heart failure, and more.</p>
+                <a href="/specialty/1" class="btn btn-outline-primary">View Topics</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-droplet-half text-primary" style="font-size: 2.5rem;"></i>
+                <h3 class="card-title mt-3">Endocrinology</h3>
+                <p class="card-text">Information on diabetes, thyroid disorders, and hormonal conditions.</p>
+                <a href="/specialty/2" class="btn btn-outline-primary">View Topics</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-lungs text-info" style="font-size: 2.5rem;"></i>
+                <h3 class="card-title mt-3">Pulmonology</h3>
+                <p class="card-text">Resources on asthma, COPD, and other respiratory conditions.</p>
+                <a href="/specialty/3" class="btn btn-outline-primary">View Topics</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+        <h2>Featured Conditions</h2>
+        <p class="text-muted">Comprehensive information on common medical conditions</p>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">Hypertension</h3>
+                <p class="card-text">High blood pressure is a common condition that can lead to serious health problems if left untreated.</p>
+                <a href="/condition/1" class="btn btn-sm btn-primary">Read More</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">Type 2 Diabetes</h3>
+                <p class="card-text">A chronic condition affecting how your body metabolizes glucose, a key source of energy.</p>
+                <a href="/condition/2" class="btn btn-sm btn-primary">Read More</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">Asthma</h3>
+                <p class="card-text">A condition in which airways narrow and swell, producing extra mucus and making breathing difficult.</p>
+                <a href="/condition/3" class="btn btn-sm btn-primary">Read More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 text-center mb-4">
+        <h2>Featured Medications</h2>
+        <p class="text-muted">Detailed information on commonly prescribed medications</p>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">Lisinopril</h3>
+                <p class="card-text">An ACE inhibitor used to treat high blood pressure and heart failure.</p>
+                <a href="/medication/1" class="btn btn-sm btn-primary">Read More</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">Metformin</h3>
+                <p class="card-text">A first-line medication for the treatment of type 2 diabetes.</p>
+                <a href="/medication/2" class="btn btn-sm btn-primary">Read More</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">Albuterol</h3>
+                <p class="card-text">A bronchodilator that relaxes muscles in the airways and increases air flow to the lungs.</p>
+                <a href="/medication/3" class="btn btn-sm btn-primary">Read More</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

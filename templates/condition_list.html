@@ -1,0 +1,30 @@
+{% extends "base_list.html" %}
+
+{% block list_content %}
+<div class="row">
+    {% for condition in items.items %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ condition.name }}</h5>
+                <span class="badge bg-info mb-2">{{ condition.specialty.name }}</span>
+                
+                {% if condition.description %}
+                <p class="card-text">{{ condition.description|truncate(100) }}</p>
+                {% endif %}
+                
+                <div class="mt-2">
+                    <a href="{{ url_for('condition_detail_by_name', condition_name=condition.name) }}" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not items.items %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>No conditions found with the selected filters. Try adjusting your filter criteria.
+</div>
+{% endif %}
+{% endblock %}

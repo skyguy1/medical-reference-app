@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Medical Topics - MedRef{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Browse Medical Topics</h1>
+
+<ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="conditions-tab" data-bs-toggle="tab" data-bs-target="#conditions" type="button" role="tab" aria-controls="conditions" aria-selected="true">
+            <i class="bi bi-clipboard2-pulse me-1"></i> Conditions
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="medications-tab" data-bs-toggle="tab" data-bs-target="#medications" type="button" role="tab" aria-controls="medications" aria-selected="false">
+            <i class="bi bi-capsule me-1"></i> Medications
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="specialties-tab" data-bs-toggle="tab" data-bs-target="#specialties" type="button" role="tab" aria-controls="specialties" aria-selected="false">
+            <i class="bi bi-diagram-3 me-1"></i> Specialties
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="conditions" role="tabpanel" aria-labelledby="conditions-tab">
+        <div class="row">
+            {% for condition in data.conditions %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title h4">{{ condition.name }}</h3>
+                        <p class="card-text">{{ condition.description[:100] }}...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/condition/{{ condition.id }}" class="btn btn-sm btn-primary">View Details</a>
+                            <small class="text-muted">{{ condition.symptoms|length }} symptoms</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="tab-pane fade" id="medications" role="tabpanel" aria-labelledby="medications-tab">
+        <div class="row">
+            {% for medication in data.medications %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title h4">{{ medication.name }}</h3>
+                        <span class="badge bg-primary mb-2">{{ medication.class }}</span>
+                        <p class="card-text">Used for: {{ medication.uses|join(', ') }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/medication/{{ medication.id }}" class="btn btn-sm btn-primary">View Details</a>
+                            <small class="text-muted">{{ medication.side_effects|length }} side effects</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="tab-pane fade" id="specialties" role="tabpanel" aria-labelledby="specialties-tab">
+        <div class="row">
+            {% for specialty in data.specialties %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title h4">{{ specialty.name }}</h3>
+                        <p class="card-text">
+                            {% if specialty.topics %}
+                                Topics: {{ specialty.topics|join(', ') }}
+                            {% else %}
+                                Medical specialty focusing on diagnosis and treatment
+                            {% endif %}
+                        </p>
+                        <a href="/specialty/{{ specialty.id }}" class="btn btn-sm btn-primary">View Specialty</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

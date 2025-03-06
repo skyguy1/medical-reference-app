@@ -1,0 +1,15 @@
+{% extends "base_list.html" %}
+
+{% block list_content %}
+<div class="list-group">
+    {% for guideline in items.items %}
+    <a href="{{ url_for('guideline_detail', guideline_id=guideline.id) }}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ guideline.title }}</h5>
+            <small>{{ guideline.organization }} ({{ guideline.publication_year }})</small>
+        </div>
+        <p class="mb-1">{{ guideline.summary|truncate(150) }}</p>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

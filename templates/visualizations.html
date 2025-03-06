@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Visualizations - Medical Reference App{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .chart-container {
+        position: relative;
+        height: 400px;
+        margin-bottom: 30px;
+    }
+    .network-container {
+        height: 600px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    .heatmap-container {
+        height: 500px;
+        overflow: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1 class="mb-4">Medical Data Visualizations</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Overview</h3>
+                </div>
+                <div class="card-body">
+                    <p>This dashboard provides visual insights into the medical reference database. Use these visualizations to better understand relationships between conditions, medications, and specialties.</p>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-white bg-primary">
+                                <div class="card-body">
+                                    <h5 class="card-title">Conditions</h5>
+                                    <h2 class="card-text">{{ condition_count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-white bg-success">
+                                <div class="card-body">
+                                    <h5 class="card-title">Medications</h5>
+                                    <h2 class="card-text">{{ medication_count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-white bg-info">
+                                <div class="card-body">
+                                    <h5 class="card-title">Specialties</h5>
+                                    <h2 class="card-text">{{ specialty_count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-white bg-warning">
+                                <div class="card-body">
+                                    <h5 class="card-title">References</h5>
+                                    <h2 class="card-text">{{ reference_count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Specialty Distribution</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="specialtyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Medication Classes</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="medicationClassChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Condition-Medication Network</h3>
+                </div>
+                <div class="card-body">
+                    <div class="network-container" id="networkChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Reference Timeline</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Guidelines by Organization</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="guidelineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Condition-Symptom Heatmap</h3>
+                </div>
+                <div class="card-body">
+                    <div class="heatmap-container" id="heatmapChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script>
+    // Specialty Distribution Chart
+    const specialtyCtx = document.getElementById('specialtyChart').getContext('2d');
+    const specialtyChart = new Chart(specialtyCtx, {
+        type: 'bar',
+        data: {{ specialty_distribution | tojson }},
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Medication Class Chart
+    const medicationClassCtx = document.getElementById('medicationClassChart').getContext('2d');
+    const medicationClassChart = new Chart(medicationClassCtx, {
+        type: 'pie',
+        data: {{ medication_class_distribution | tojson }},
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    
+    // Reference Timeline Chart
+    const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+    const timelineData = {{ reference_timeline | tojson }};
+    const timelineChart = new Chart(timelineCtx, {
+        type: 'line',
+        data: {
+            labels: timelineData.map(item => item.year),
+            datasets: [{
+                label: 'Number of References',
+                data: timelineData.map(item => item.count),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+    
+    // Guideline Organization Chart
+    const guidelineCtx = document.getElementById('guidelineChart').getContext('2d');
+    const guidelineChart = new Chart(guidelineCtx, {
+        type: 'bar',
+        data: {{ guideline_organization_distribution | tojson }},
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+    
+    // Network Chart
+    const networkData = {{ condition_network | tojson }};
+    const networkContainer = document.getElementById('networkChart');
+    
+    // Create a force-directed graph
+    const width = networkContainer.clientWidth;
+    const height = networkContainer.clientHeight;
+    
+    const svg = d3.select(networkContainer)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+    
+    // Create a force simulation
+    const simulation = d3.forceSimulation(networkData.nodes)
+        .force("link", d3.forceLink(networkData.links).id(d => d.id).distance(100))
+        .force("charge", d3.forceManyBody().strength(-300))
+        .force("center", d3.forceCenter(width / 2, height / 2));
+    
+    // Create links
+    const link = svg.append("g")
+        .selectAll("line")
+        .data(networkData.links)
+        .enter().append("line")
+        .attr("stroke", "#999")
+        .attr("stroke-opacity", 0.6)
+        .attr("stroke-width", d => Math.sqrt(d.value));
+    
+    // Create nodes
+    const node = svg.append("g")
+        .selectAll("circle")
+        .data(networkData.nodes)
+        .enter().append("circle")
+        .attr("r", 5)
+        .attr("fill", d => d.group === 1 ? "#4285F4" : "#EA4335")
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+    
+    // Add tooltips
+    node.append("title")
+        .text(d => d.name);
+    
+    // Update positions on each tick
+    simulation.on("tick", () => {
+        link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+        
+        node
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+    });
+    
+    // Drag functions
+    function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+    
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+    
+    function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+    
+    // Heatmap Chart
+    const heatmapData = {{ condition_symptom_heatmap | tojson }};
+    const heatmapContainer = document.getElementById('heatmapChart');
+    
+    // Create a table for the heatmap
+    const table = document.createElement('table');
+    table.className = 'table table-bordered';
+    
+    // Create header row with symptom names
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    
+    // Empty cell for the top-left corner
+    const cornerCell = document.createElement('th');
+    cornerCell.textContent = 'Condition / Symptom';
+    headerRow.appendChild(cornerCell);
+    
+    // Add symptom headers
+    heatmapData.symptoms.forEach(symptom => {
+        const th = document.createElement('th');
+        th.textContent = symptom;
+        th.style.writingMode = 'vertical-rl';
+        th.style.transform = 'rotate(180deg)';
+        th.style.maxHeight = '150px';
+        headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Create body with condition rows
+    const tbody = document.createElement('tbody');
+    
+    heatmapData.conditions.forEach(condition => {
+        const row = document.createElement('tr');
+        
+        // Add condition name as first cell
+        const conditionCell = document.createElement('th');
+        conditionCell.textContent = condition;
+        conditionCell.scope = 'row';
+        row.appendChild(conditionCell);
+        
+        // Add cells for each symptom
+        heatmapData.symptoms.forEach(symptom => {
+            const cell = document.createElement('td');
+            
+            // Find the value for this condition-symptom pair
+            const dataPoint = heatmapData.data.find(
+                d => d.condition === condition && d.symptom === symptom
+            );
+            
+            if (dataPoint && dataPoint.value === 1) {
+                cell.className = 'bg-primary';
+            }
+            
+            row.appendChild(cell);
+        });
+        
+        tbody.appendChild(row);
+    });
+    
+    table.appendChild(tbody);
+    heatmapContainer.appendChild(table);
+</script>
+{% endblock %}
