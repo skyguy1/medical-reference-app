@@ -40,7 +40,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///medical_reference.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///medical_reference.db')
+if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
 app.config['CACHE_DIR'] = 'cache'
@@ -738,5 +740,8 @@ if __name__ == '__main__':
             except Exception as e:
                 print(f"Error generating medication relationships: {str(e)}")
     
+    # Get port from environment variable or use default
+    port = int(os.environ.get('PORT', 5000))
+    
     # Start the Flask application
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
