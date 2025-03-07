@@ -40,9 +40,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+# Get database URL from environment variable or use SQLite as fallback
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///medical_reference.db')
-if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
+# Fix for Render's PostgreSQL URL format
+if app.config['SQLALCHEMY_DATABASE_URI'] and app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
+    
+logger.info(f"Using database: {app.config['SQLALCHEMY_DATABASE_URI']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
 app.config['CACHE_DIR'] = 'cache'
@@ -51,12 +55,12 @@ app.config['CACHE_DIR'] = 'cache'
 db.init_app(app)
 migrate = Migrate(app, db)
 
+# Register blueprints
+app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(auth.auth, url_prefix='/auth')
+
 # Initialize login manager
 login_manager.init_app(app)
-
-# Register blueprints
-app.register_blueprint(auth.auth)
-app.register_blueprint(api)
 
 # Ensure directories exist
 os.makedirs('data', exist_ok=True)
