@@ -3,7 +3,7 @@ services:
     name: medical-reference-app
     env: python
     buildCommand: bash build.sh
-    startCommand: gunicorn minimal_app:app
+    startCommand: gunicorn isolated_app:app
     envVars:
       - key: FLASK_ENV
         value: production
