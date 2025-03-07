@@ -1,7 +1,7 @@
 """
-Medical Reference App with database models but without pandas dependencies
+Medical Reference App with database models and authentication
 """
-from flask import Flask, jsonify, render_template_string, request, redirect, url_for, flash, send_file
+from flask import Flask, jsonify, render_template_string, request, redirect, url_for, flash, send_file, session
 import os
 import logging
 import json
@@ -23,13 +23,24 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Import and initialize database models
 try:
     from models import db, User, Condition, Medication, Specialty, Reference, Guideline
+    from auth import auth_bp, login_manager, create_admin_user
+    
+    # Initialize extensions
     db.init_app(app)
+    login_manager.init_app(app)
+    
+    # Register blueprints
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    
+    # Initialize database and create admin user
     with app.app_context():
         db.create_all()
+        create_admin_user(app)
+    
     models_available = True
-    logger.info("Database models initialized successfully")
+    logger.info("Database models and authentication initialized successfully")
 except ImportError as e:
-    logger.error(f"Error importing models: {e}")
+    logger.error(f"Error importing models or auth: {e}")
     models_available = False
 
 # Ensure the instance folder exists
@@ -159,6 +170,9 @@ BASE_TEMPLATE = """
 </body>
 </html>
 """
+
+# Store base template in session for auth module
+session['base_template'] = BASE_TEMPLATE
 
 # Routes
 @app.route('/')
