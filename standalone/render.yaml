@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: medical-reference-app
+    env: python
+    buildCommand: bash build.sh
+    startCommand: gunicorn app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+    healthCheckPath: /health
+    autoDeploy: true
