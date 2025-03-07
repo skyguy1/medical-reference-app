@@ -1,15 +1,12 @@
 services:
   - type: web
-    name: medical-reference-app
+    name: medical-reference-app-minimal
     env: python
-    buildCommand: bash stable_build.sh
-    startCommand: gunicorn stable_app:app
+    buildCommand: bash build-minimal.sh
+    startCommand: gunicorn minimal:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
       - key: FLASK_ENV
         value: production
-      - key: PYTHONUNBUFFERED
-        value: "true"
     healthCheckPath: /health
-    autoDeploy: true
