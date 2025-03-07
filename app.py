@@ -11,22 +11,35 @@ import auth
 from auth import login_manager
 from api import api
 from cache import cache_result, clear_expired_cache
-from visualizations import (
-    get_specialty_distribution, 
-    get_medication_class_distribution,
-    get_condition_network,
-    get_reference_timeline,
-    get_guideline_organization_distribution,
-    get_condition_symptom_heatmap
-)
-from export import (
-    export_conditions,
-    export_medications,
-    export_specialties,
-    export_references,
-    export_guidelines,
-    export_all
-)
+
+# Try to import visualization and export modules, but provide fallbacks if they fail
+try:
+    from visualizations import (
+        get_specialty_distribution, 
+        get_medication_class_distribution,
+        get_condition_network,
+        get_reference_timeline,
+        get_guideline_organization_distribution,
+        get_condition_symptom_heatmap
+    )
+    VISUALIZATIONS_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"Visualizations module import error: {e}")
+    VISUALIZATIONS_AVAILABLE = False
+
+try:
+    from export import (
+        export_conditions,
+        export_medications,
+        export_specialties,
+        export_references,
+        export_guidelines,
+        export_all
+    )
+    EXPORTS_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"Export module import error: {e}")
+    EXPORTS_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(
@@ -459,6 +472,10 @@ def guideline_detail(guideline_id):
 @login_required
 def visualizations():
     """Display data visualizations"""
+    if not VISUALIZATIONS_AVAILABLE:
+        flash('Visualizations are currently unavailable', 'error')
+        return redirect(url_for('index'))
+    
     # Get counts for overview
     condition_count = Condition.query.count()
     medication_count = Medication.query.count()
@@ -489,12 +506,20 @@ def visualizations():
 @login_required
 def export():
     """Export data page"""
+    if not EXPORTS_AVAILABLE:
+        flash('Exports are currently unavailable', 'error')
+        return redirect(url_for('index'))
+    
     return render_template('export.html')
 
 @app.route('/export/download')
 @login_required
 def export_download():
     """Download exported data"""
+    if not EXPORTS_AVAILABLE:
+        flash('Exports are currently unavailable', 'error')
+        return redirect(url_for('index'))
+    
     data_type = request.args.get('type', 'all')
     format = request.args.get('format', 'json')
     
