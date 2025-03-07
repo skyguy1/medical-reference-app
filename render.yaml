@@ -2,8 +2,9 @@ services:
   - type: web
     name: medical-reference-app-mini
     env: python
-    buildCommand: bash build-minimal.sh
-    startCommand: gunicorn minimal:app
+    rootDir: standalone
+    buildCommand: bash build.sh
+    startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
