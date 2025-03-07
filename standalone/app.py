@@ -171,8 +171,10 @@ BASE_TEMPLATE = """
 </html>
 """
 
-# Store base template in session for auth module
-session['base_template'] = BASE_TEMPLATE
+@app.before_request
+def store_base_template():
+    """Store base template in session before each request"""
+    session['base_template'] = BASE_TEMPLATE
 
 # Routes
 @app.route('/')
