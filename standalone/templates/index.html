@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Reference App - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4">Medical Reference App</h1>
+            <p class="lead">A comprehensive reference for medical professionals and students.</p>
+            <hr class="my-4">
+            <p>Access information about medications, conditions, and treatment guidelines.</p>
+            {% if not current_user.is_authenticated %}
+                <p>Please <a href="{{ url_for('login') }}">login</a> or <a href="{{ url_for('register') }}">register</a> to access all features.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Medications</h5>
+                <p class="card-text">Browse our comprehensive database of medications including dosages, side effects, and contraindications.</p>
+                <a href="{{ url_for('medications') }}" class="btn btn-primary">View Medications</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Conditions</h5>
+                <p class="card-text">Learn about various medical conditions, their symptoms, and recommended treatments.</p>
+                <a href="{{ url_for('conditions') }}" class="btn btn-primary">View Conditions</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">About</h5>
+                <p class="card-text">The Medical Reference App is designed to provide quick and reliable medical information for healthcare professionals.</p>
+                <p class="card-text text-success">✅ Successfully deployed on Render!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

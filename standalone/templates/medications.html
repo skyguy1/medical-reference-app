@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Reference App - Medications{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Medications</h1>
+        <p class="lead">Browse our comprehensive database of medications.</p>
+        
+        {% if medications %}
+            <div class="row">
+                {% for medication in medications %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ medication.name }}</h5>
+                                <p class="card-text">{{ medication.description|truncate(100) }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#medicationModal{{ medication.id }}">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal for medication details -->
+                    <div class="modal fade" id="medicationModal{{ medication.id }}" tabindex="-1" aria-labelledby="medicationModalLabel{{ medication.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="medicationModalLabel{{ medication.id }}">{{ medication.name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h6>Description</h6>
+                                    <p>{{ medication.description }}</p>
+                                    
+                                    <h6>Dosage</h6>
+                                    <p>{{ medication.dosage }}</p>
+                                    
+                                    <h6>Side Effects</h6>
+                                    <p>{{ medication.side_effects }}</p>
+                                    
+                                    <h6>Contraindications</h6>
+                                    <p>{{ medication.contraindications }}</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No medications found in the database. Check back later as we continue to update our records.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
