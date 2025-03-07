@@ -2,9 +2,6 @@
 # exit on error
 set -o errexit
 
-# Make sure the script is executable
-chmod +x build.sh
-
 pip install --upgrade pip
 pip install -r requirements.txt
 
