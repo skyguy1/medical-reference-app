@@ -2,8 +2,8 @@ services:
   - type: web
     name: medical-reference-app
     env: python
-    buildCommand: bash isolated_build.sh
-    startCommand: gunicorn isolated_app:app
+    buildCommand: bash stable_build.sh
+    startCommand: gunicorn stable_app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0

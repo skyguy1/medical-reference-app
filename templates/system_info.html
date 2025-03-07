@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>System Information</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Environment</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <tr>
+                    <th>Flask Environment</th>
+                    <td>{{ info.flask_env }}</td>
+                </tr>
+                <tr>
+                    <th>Python Version</th>
+                    <td>{{ info.python_version }}</td>
+                </tr>
+                <tr>
+                    <th>Server Time</th>
+                    <td>{{ info.server_time }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Database</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <tr>
+                    <th>Database URL</th>
+                    <td>{{ info.database_url }}</td>
+                </tr>
+                <tr>
+                    <th>Models Available</th>
+                    <td>
+                        {% if info.models_available %}
+                            <span class="badge bg-success">Available</span>
+                        {% else %}
+                            <span class="badge bg-danger">Unavailable</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Application Status</h3>
+        </div>
+        <div class="card-body">
+            <a href="{{ url_for('health') }}" class="btn btn-primary">View Health Check</a>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+</div>
+{% endblock %}
