@@ -4,330 +4,375 @@ This file directly implements the essential functionality without dependencies
 """
 import os
 import sys
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, session
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from datetime import datetime
+from flask import Flask, jsonify, send_from_directory
 
-# Create Flask app
-app = Flask(__name__, template_folder='templates', static_folder='static')
+# Create a simple Flask app
+app = Flask(__name__)
 
-# Configure the app
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-testing')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///medical_reference.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize extensions
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-
-# Define models
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, index=True)
-    email = db.Column(db.String(120), unique=True, index=True)
-    password_hash = db.Column(db.String(128))
-    is_admin = db.Column(db.Boolean, default=False)
-    notes = db.relationship('Note', backref='author', lazy='dynamic')
-    favorites = db.relationship('Favorite', backref='user', lazy='dynamic')
-    specialty_notifications = db.Column(db.Boolean, default=False)
-    
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-        
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-class Specialty(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    description = db.Column(db.Text)
-    conditions = db.relationship('Condition', secondary='specialty_condition', backref='specialties')
-    medications = db.relationship('Medication', secondary='specialty_medication', backref='specialties')
-    guidelines = db.relationship('Guideline', secondary='specialty_guideline', backref='specialties')
-    
-    def __repr__(self):
-        return f'<Specialty {self.name}>'
-
-class Medication(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    generic_name = db.Column(db.String(100))
-    drug_class = db.Column(db.String(100))
-    description = db.Column(db.Text)
-    dosage = db.Column(db.String(100))
-    side_effects = db.Column(db.Text)
-    contraindications = db.Column(db.Text)
-    notes = db.relationship('Note', backref='medication', lazy='dynamic')
-    favorites = db.relationship('Favorite', backref='medication', lazy='dynamic')
-    conditions = db.relationship('Condition', secondary='medication_condition', backref='medications')
-    guidelines = db.relationship('Guideline', secondary='medication_guideline', backref='medications')
-    
-    def __repr__(self):
-        return f'<Medication {self.name}>'
-
-class Condition(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
-    symptoms = db.Column(db.Text)
-    diagnosis = db.Column(db.Text)
-    treatment = db.Column(db.Text)
-    notes = db.relationship('Note', backref='condition', lazy='dynamic')
-    favorites = db.relationship('Favorite', backref='condition', lazy='dynamic')
-    guidelines = db.relationship('Guideline', secondary='condition_guideline', backref='conditions')
-    
-    def __repr__(self):
-        return f'<Condition {self.name}>'
-
-class Guideline(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    content = db.Column(db.Text)
-    source = db.Column(db.String(200))
-    publication_date = db.Column(db.Date)
-    summary = db.Column(db.Text)
-    evidence_level = db.Column(db.String(50))
-    recommendations = db.Column(db.Text)
-    
-    def __repr__(self):
-        return f'<Guideline {self.title}>'
-
-class Note(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    medication_id = db.Column(db.Integer, db.ForeignKey('medication.id'))
-    condition_id = db.Column(db.Integer, db.ForeignKey('condition.id'))
-
-class Favorite(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    medication_id = db.Column(db.Integer, db.ForeignKey('medication.id'))
-    condition_id = db.Column(db.Integer, db.ForeignKey('condition.id'))
-
-# Association tables
-specialty_condition = db.Table('specialty_condition',
-    db.Column('specialty_id', db.Integer, db.ForeignKey('specialty.id'), primary_key=True),
-    db.Column('condition_id', db.Integer, db.ForeignKey('condition.id'), primary_key=True)
-)
-
-specialty_medication = db.Table('specialty_medication',
-    db.Column('specialty_id', db.Integer, db.ForeignKey('specialty.id'), primary_key=True),
-    db.Column('medication_id', db.Integer, db.ForeignKey('medication.id'), primary_key=True)
-)
-
-specialty_guideline = db.Table('specialty_guideline',
-    db.Column('specialty_id', db.Integer, db.ForeignKey('specialty.id'), primary_key=True),
-    db.Column('guideline_id', db.Integer, db.ForeignKey('guideline.id'), primary_key=True)
-)
-
-medication_condition = db.Table('medication_condition',
-    db.Column('medication_id', db.Integer, db.ForeignKey('medication.id'), primary_key=True),
-    db.Column('condition_id', db.Integer, db.ForeignKey('condition.id'), primary_key=True)
-)
-
-medication_guideline = db.Table('medication_guideline',
-    db.Column('medication_id', db.Integer, db.ForeignKey('medication.id'), primary_key=True),
-    db.Column('guideline_id', db.Integer, db.ForeignKey('guideline.id'), primary_key=True)
-)
-
-condition_guideline = db.Table('condition_guideline',
-    db.Column('condition_id', db.Integer, db.ForeignKey('condition.id'), primary_key=True),
-    db.Column('guideline_id', db.Integer, db.ForeignKey('guideline.id'), primary_key=True)
-)
-
-user_specialty = db.Table('user_specialty',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('specialty_id', db.Integer, db.ForeignKey('specialty.id'), primary_key=True)
-)
-
-@login_manager.user_loader
-def load_user(id):
-    return User.query.get(int(id))
-
-# Routes
 @app.route('/')
 def index():
-    try:
-        return render_template('index.html')
-    except Exception as e:
-        return f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Medical Reference App</title>
-            <style>
-                body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
-                h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
-                .message {{ color: blue; font-weight: bold; }}
-                pre {{ background: #f5f5f5; padding: 10px; overflow: auto; }}
-            </style>
-        </head>
-        <body>
-            <h1>Medical Reference App</h1>
-            <p class="message">✅ Application is running!</p>
-            <p>Template error: {str(e)}</p>
-            <p>Available routes:</p>
-            <ul>
-                <li><a href="/medications">/medications</a></li>
-                <li><a href="/conditions">/conditions</a></li>
-                <li><a href="/login">/login</a></li>
-                <li><a href="/specialties">/specialties</a></li>
-                <li><a href="/guidelines">/guidelines</a></li>
-            </ul>
-            <p>Template folders searched:</p>
-            <pre>{app.template_folder}</pre>
-            <p>Available templates:</p>
-            <pre>{os.listdir(app.template_folder) if os.path.exists(app.template_folder) else 'Template folder not found'}</pre>
-        </body>
-        </html>
-        """
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
+    """Root route that shows a simple page with links to other routes"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Medical Reference App</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+            h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+            .message {{ color: green; font-weight: bold; }}
+            .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }}
+            .card h2 {{ margin-top: 0; color: #3498db; }}
+            .btn {{ display: inline-block; background-color: #3498db; color: white; padding: 8px 16px; 
+                   text-decoration: none; border-radius: 4px; margin-right: 8px; }}
+            .btn:hover {{ background-color: #2980b9; }}
+        </style>
+    </head>
+    <body>
+        <h1>Medical Reference App</h1>
+        <p class="message">✅ Application is running successfully!</p>
         
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists')
-            return redirect(url_for('register'))
+        <div class="card">
+            <h2>Medications</h2>
+            <p>Browse our comprehensive database of medications, including dosage information, side effects, and contraindications.</p>
+            <a href="/medications" class="btn">View Medications</a>
+        </div>
         
-        if User.query.filter_by(email=email).first():
-            flash('Email already registered')
-            return redirect(url_for('register'))
+        <div class="card">
+            <h2>Conditions</h2>
+            <p>Learn about various medical conditions, their symptoms, diagnosis methods, and treatment options.</p>
+            <a href="/conditions" class="btn">View Conditions</a>
+        </div>
         
-        user = User(username=username, email=email)
-        user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
+        <div class="card">
+            <h2>Specialties</h2>
+            <p>Explore medical specialties and find related conditions, medications, and guidelines.</p>
+            <a href="/specialties" class="btn">View Specialties</a>
+        </div>
         
-        flash('Registration successful!')
-        return redirect(url_for('login'))
-    
-    return render_template('register.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        remember = 'remember' in request.form
+        <div class="card">
+            <h2>Guidelines</h2>
+            <p>Access evidence-based clinical guidelines from reputable medical organizations.</p>
+            <a href="/guidelines" class="btn">View Guidelines</a>
+        </div>
         
-        user = User.query.filter_by(username=username).first()
-        
-        if not user or not user.check_password(password):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
-        
-        login_user(user, remember=remember)
-        return redirect(url_for('index'))
-    
-    return render_template('login.html')
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
+        <div class="card">
+            <h2>User Account</h2>
+            <p>Log in to access personalized features or create a new account.</p>
+            <a href="/login" class="btn">Login</a>
+            <a href="/register" class="btn">Register</a>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.route('/medications')
 def medications():
-    medications = Medication.query.all()
-    return render_template('medications.html', medications=medications)
-
-@app.route('/medications/<int:id>')
-def medication_detail(id):
-    medication = Medication.query.get_or_404(id)
-    return render_template('medication_detail.html', medication=medication)
+    """Route that shows a list of medications"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Medications - Medical Reference App</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+            h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+            .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }}
+            .card h2 {{ margin-top: 0; color: #3498db; }}
+            .btn {{ display: inline-block; background-color: #3498db; color: white; padding: 8px 16px; 
+                   text-decoration: none; border-radius: 4px; }}
+            .btn:hover {{ background-color: #2980b9; }}
+            .home-link {{ margin-bottom: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="home-link">
+            <a href="/" class="btn">Home</a>
+        </div>
+        
+        <h1>Medications</h1>
+        
+        <div class="card">
+            <h2>Aspirin</h2>
+            <p><strong>Generic Name:</strong> Acetylsalicylic acid</p>
+            <p><strong>Drug Class:</strong> NSAID</p>
+            <p><strong>Description:</strong> Common pain reliever and anti-inflammatory</p>
+            <a href="/medications/1" class="btn">View Details</a>
+        </div>
+        
+        <div class="card">
+            <h2>Lisinopril</h2>
+            <p><strong>Generic Name:</strong> Lisinopril</p>
+            <p><strong>Drug Class:</strong> ACE Inhibitor</p>
+            <p><strong>Description:</strong> Used to treat high blood pressure and heart failure</p>
+            <a href="/medications/2" class="btn">View Details</a>
+        </div>
+        
+        <div class="card">
+            <h2>Prozac</h2>
+            <p><strong>Generic Name:</strong> Fluoxetine</p>
+            <p><strong>Drug Class:</strong> SSRI</p>
+            <p><strong>Description:</strong> Antidepressant used to treat depression, OCD, and panic attacks</p>
+            <a href="/medications/3" class="btn">View Details</a>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.route('/conditions')
 def conditions():
-    conditions = Condition.query.all()
-    return render_template('conditions.html', conditions=conditions)
-
-@app.route('/conditions/<int:id>')
-def condition_detail(id):
-    condition = Condition.query.get_or_404(id)
-    return render_template('condition_detail.html', condition=condition)
+    """Route that shows a list of conditions"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Conditions - Medical Reference App</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+            h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+            .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }}
+            .card h2 {{ margin-top: 0; color: #3498db; }}
+            .btn {{ display: inline-block; background-color: #3498db; color: white; padding: 8px 16px; 
+                   text-decoration: none; border-radius: 4px; }}
+            .btn:hover {{ background-color: #2980b9; }}
+            .home-link {{ margin-bottom: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="home-link">
+            <a href="/" class="btn">Home</a>
+        </div>
+        
+        <h1>Medical Conditions</h1>
+        
+        <div class="card">
+            <h2>Hypertension</h2>
+            <p><strong>Description:</strong> High blood pressure</p>
+            <p><strong>Symptoms:</strong> Usually asymptomatic, headache, shortness of breath</p>
+            <a href="/conditions/1" class="btn">View Details</a>
+        </div>
+        
+        <div class="card">
+            <h2>Major Depressive Disorder</h2>
+            <p><strong>Description:</strong> Mood disorder causing persistent feeling of sadness</p>
+            <p><strong>Symptoms:</strong> Persistent sadness, loss of interest, sleep disturbances</p>
+            <a href="/conditions/2" class="btn">View Details</a>
+        </div>
+        
+        <div class="card">
+            <h2>Migraine</h2>
+            <p><strong>Description:</strong> Recurring headaches of moderate to severe intensity</p>
+            <p><strong>Symptoms:</strong> Throbbing pain, nausea, sensitivity to light and sound</p>
+            <a href="/conditions/3" class="btn">View Details</a>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.route('/specialties')
 def specialties():
-    specialties = Specialty.query.all()
-    return render_template('specialties.html', specialties=specialties)
-
-@app.route('/specialties/<int:id>')
-def specialty_detail(id):
-    specialty = Specialty.query.get_or_404(id)
-    return render_template('specialty_detail.html', specialty=specialty)
+    """Route that shows a list of specialties"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Specialties - Medical Reference App</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+            h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+            .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }}
+            .card h2 {{ margin-top: 0; color: #3498db; }}
+            .btn {{ display: inline-block; background-color: #3498db; color: white; padding: 8px 16px; 
+                   text-decoration: none; border-radius: 4px; }}
+            .btn:hover {{ background-color: #2980b9; }}
+            .home-link {{ margin-bottom: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="home-link">
+            <a href="/" class="btn">Home</a>
+        </div>
+        
+        <h1>Medical Specialties</h1>
+        
+        <div class="card">
+            <h2>Cardiology</h2>
+            <p><strong>Description:</strong> Deals with disorders of the heart and blood vessels</p>
+            <a href="/specialties/1" class="btn">View Details</a>
+        </div>
+        
+        <div class="card">
+            <h2>Neurology</h2>
+            <p><strong>Description:</strong> Focuses on disorders of the nervous system</p>
+            <a href="/specialties/2" class="btn">View Details</a>
+        </div>
+        
+        <div class="card">
+            <h2>Pediatrics</h2>
+            <p><strong>Description:</strong> Medical care of infants, children, and adolescents</p>
+            <a href="/specialties/3" class="btn">View Details</a>
+        </div>
+        
+        <div class="card">
+            <h2>Psychiatry</h2>
+            <p><strong>Description:</strong> Diagnosis, prevention, and treatment of mental disorders</p>
+            <a href="/specialties/4" class="btn">View Details</a>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.route('/guidelines')
 def guidelines():
-    guidelines = Guideline.query.all()
-    return render_template('guidelines.html', guidelines=guidelines)
+    """Route that shows a list of guidelines"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Guidelines - Medical Reference App</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+            h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+            .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }}
+            .card h2 {{ margin-top: 0; color: #3498db; }}
+            .btn {{ display: inline-block; background-color: #3498db; color: white; padding: 8px 16px; 
+                   text-decoration: none; border-radius: 4px; }}
+            .btn:hover {{ background-color: #2980b9; }}
+            .home-link {{ margin-bottom: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="home-link">
+            <a href="/" class="btn">Home</a>
+        </div>
+        
+        <h1>Clinical Guidelines</h1>
+        
+        <div class="card">
+            <h2>Hypertension Management Guidelines</h2>
+            <p><strong>Source:</strong> American Heart Association</p>
+            <p><strong>Published:</strong> January 15, 2023</p>
+            <p><strong>Summary:</strong> Guidelines for diagnosis and treatment of hypertension</p>
+            <a href="/guidelines/1" class="btn">View Details</a>
+        </div>
+        
+        <div class="card">
+            <h2>Depression Treatment Guidelines</h2>
+            <p><strong>Source:</strong> American Psychiatric Association</p>
+            <p><strong>Published:</strong> June 10, 2022</p>
+            <p><strong>Summary:</strong> Guidelines for management of major depressive disorder</p>
+            <a href="/guidelines/2" class="btn">View Details</a>
+        </div>
+    </body>
+    </html>
+    """
 
-@app.route('/guidelines/<int:id>')
-def guideline_detail(id):
-    guideline = Guideline.query.get_or_404(id)
-    return render_template('guideline_detail.html', guideline=guideline)
+@app.route('/login')
+def login():
+    """Route that shows a login form"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Login - Medical Reference App</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+            h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+            .form-group {{ margin-bottom: 15px; }}
+            label {{ display: block; margin-bottom: 5px; font-weight: bold; }}
+            input[type="text"], input[type="password"] {{ width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }}
+            .btn {{ display: inline-block; background-color: #3498db; color: white; padding: 8px 16px; 
+                   text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }}
+            .btn:hover {{ background-color: #2980b9; }}
+            .home-link {{ margin-bottom: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="home-link">
+            <a href="/" class="btn">Home</a>
+        </div>
+        
+        <h1>Login</h1>
+        
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember" style="display: inline;">Remember me</label>
+            </div>
+            
+            <button type="submit" class="btn">Login</button>
+        </form>
+        
+        <p>Don't have an account? <a href="/register">Register here</a></p>
+    </body>
+    </html>
+    """
 
-@app.route('/profile')
-@login_required
-def profile():
-    return render_template('profile.html')
-
-@app.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        current_password = request.form.get('current_password')
+@app.route('/register')
+def register():
+    """Route that shows a registration form"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Register - Medical Reference App</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+            h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+            .form-group {{ margin-bottom: 15px; }}
+            label {{ display: block; margin-bottom: 5px; font-weight: bold; }}
+            input[type="text"], input[type="email"], input[type="password"] {{ width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }}
+            .btn {{ display: inline-block; background-color: #3498db; color: white; padding: 8px 16px; 
+                   text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }}
+            .btn:hover {{ background-color: #2980b9; }}
+            .home-link {{ margin-bottom: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="home-link">
+            <a href="/" class="btn">Home</a>
+        </div>
         
-        if not current_user.check_password(current_password):
-            flash('Current password is incorrect')
-            return redirect(url_for('edit_profile'))
+        <h1>Register</h1>
         
-        if username != current_user.username and User.query.filter_by(username=username).first():
-            flash('Username already exists')
-            return redirect(url_for('edit_profile'))
+        <form action="/register" method="post">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            
+            <button type="submit" class="btn">Register</button>
+        </form>
         
-        if email != current_user.email and User.query.filter_by(email=email).first():
-            flash('Email already registered')
-            return redirect(url_for('edit_profile'))
-        
-        current_user.username = username
-        current_user.email = email
-        
-        new_password = request.form.get('new_password')
-        if new_password:
-            current_user.set_password(new_password)
-        
-        db.session.commit()
-        flash('Profile updated successfully')
-        return redirect(url_for('profile'))
-    
-    return render_template('edit_profile.html')
-
-@app.route('/admin')
-@login_required
-def admin():
-    if not current_user.is_admin:
-        flash('You do not have permission to access this page')
-        return redirect(url_for('index'))
-    
-    users = User.query.all()
-    return render_template('admin.html', users=users)
+        <p>Already have an account? <a href="/login">Login here</a></p>
+    </body>
+    </html>
+    """
 
 @app.route('/health')
 def health():
@@ -336,4 +381,4 @@ def health():
 
 # This is the only entry point for the application
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
