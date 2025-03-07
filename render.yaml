@@ -2,7 +2,7 @@ services:
   - type: web
     name: medical-reference-app
     env: python
-    buildCommand: bash minimal_build.sh
+    buildCommand: bash build.sh
     startCommand: gunicorn minimal_app:app
     envVars:
       - key: FLASK_ENV
