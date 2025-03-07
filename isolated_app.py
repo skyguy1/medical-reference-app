@@ -11,7 +11,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from datetime import datetime
 
 # Create Flask app
-app = Flask(__name__, template_folder='standalone/templates', static_folder='standalone/static')
+app = Flask(__name__, template_folder='templates', static_folder='static')
 
 # Configure the app
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-testing')
@@ -152,7 +152,40 @@ def load_user(id):
 # Routes
 @app.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Medical Reference App</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+                h1 {{ color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }}
+                .message {{ color: blue; font-weight: bold; }}
+                pre {{ background: #f5f5f5; padding: 10px; overflow: auto; }}
+            </style>
+        </head>
+        <body>
+            <h1>Medical Reference App</h1>
+            <p class="message">✅ Application is running!</p>
+            <p>Template error: {str(e)}</p>
+            <p>Available routes:</p>
+            <ul>
+                <li><a href="/medications">/medications</a></li>
+                <li><a href="/conditions">/conditions</a></li>
+                <li><a href="/login">/login</a></li>
+                <li><a href="/specialties">/specialties</a></li>
+                <li><a href="/guidelines">/guidelines</a></li>
+            </ul>
+            <p>Template folders searched:</p>
+            <pre>{app.template_folder}</pre>
+            <p>Available templates:</p>
+            <pre>{os.listdir(app.template_folder) if os.path.exists(app.template_folder) else 'Template folder not found'}</pre>
+        </body>
+        </html>
+        """
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
