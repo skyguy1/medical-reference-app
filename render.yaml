@@ -3,7 +3,7 @@ services:
     name: medical-reference-app-mini
     env: python
     buildCommand: ./build.sh
-    startCommand: gunicorn isolated_app:app
+    startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0

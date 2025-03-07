@@ -654,6 +654,11 @@ def server_error(e):
     logger.error(f"Server error: {str(e)}")
     return render_template('500.html'), 500
 
+@app.route('/health')
+def health():
+    """Health check endpoint for Render"""
+    return jsonify({"status": "healthy"})
+
 def generate_medication_relationships():
     """Generate relationships between medications based on class and specialty"""
     from models import Medication, MedicationRelationship, db
