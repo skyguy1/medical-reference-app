@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: medical-reference-app-minimal
+    name: medical-reference-app-mini
     env: python
     buildCommand: bash build-minimal.sh
     startCommand: gunicorn minimal:app
